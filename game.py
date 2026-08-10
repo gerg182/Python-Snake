@@ -29,7 +29,7 @@ def draw_grid(screen):
             pygame.draw.rect(screen, color, (x,y, CELL_SIZE, CELL_SIZE))
 
 class Piece:
-    def __init__(self, pos_x, pos_y, radius, color, speed=5):
+    def __init__(self, pos_x, pos_y, radius, color, speed=6):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.radius = radius
@@ -147,7 +147,7 @@ class Piece:
         
 
 class Apple:
-    def __init__(self, radius, color):
+    def __init__(self, radius, color,):
         self.color = color
         self.radius = radius
         self.pos_x = random.randrange(GRID_WIDTH) * CELL_SIZE + CELL_SIZE // 2
@@ -155,9 +155,20 @@ class Apple:
 
     def respawn(self, occupied):
         while True:
-            self.pos_x = random.randrange(GRID_WIDTH) * CELL_SIZE + CELL_SIZE // 2
-            self.pos_y = random.randrange(GRID_HEIGHT) * CELL_SIZE + CELL_SIZE // 2
-            if (self.pos_x, self.pos_y) not in occupied:
+            candidate_x = random.randrange(GRID_WIDTH) * CELL_SIZE + CELL_SIZE // 2
+            candidate_y = random.randrange(GRID_HEIGHT) * CELL_SIZE + CELL_SIZE // 2
+            too_close = False
+            for occ_x, occ_y in occupied:
+                dx = candidate_x - occ_x
+                dy = candidate_y - occ_y
+                distance = (dx ** 2 + dy ** 2) ** 0.5
+                if distance < CELL_SIZE:
+                    too_close = True
+                    break
+
+            if not too_close:
+                self.pos_x = candidate_x
+                self.pos_y = candidate_y
                 break
         
     def draw(self, screen):
